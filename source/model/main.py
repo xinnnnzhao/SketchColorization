@@ -18,6 +18,7 @@ def read_img(size):
     original_files = sorted(os.listdir(original_path))
     lineart_files = sorted(os.listdir(lineart_path))
 
+
     X_o = []
     X_l = []
 
