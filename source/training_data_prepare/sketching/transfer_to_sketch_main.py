@@ -1,13 +1,25 @@
 from keras.models import load_model
-import cv2
+import cv2 as cv2
 import numpy as np
-from .helper import *
+import os
 
+from source.training_data_prepare.sketching.helper import *
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+
+def warn(*args, **kwargs):
+    pass
+
+
+import warnings
+
+warnings.warn = warn
 mod = load_model('mod.h5')
 
 
 def get(path):
-    from_mat = cv2.imread(path)
+    from_mat = cv2.imread('original/' + path)
     width = float(from_mat.shape[1])
     height = float(from_mat.shape[0])
     new_width = 0
@@ -31,13 +43,15 @@ def get(path):
     line_mat = mod.predict(light_map, batch_size=1)
     line_mat = line_mat.transpose((3, 1, 2, 0))[0]
     line_mat = line_mat[0:int(new_height), 0:int(new_width), :]
-    show_active_img_and_save('sketchKeras_colored', line_mat, 'sketchKeras_colored.jpg')
+    # show_active_img_and_save('sketchKeras_colored', line_mat, 'sketchKeras_colored.jpg')
     line_mat = np.amax(line_mat, 2)
-    show_active_img_and_save_denoise_filter2('sketchKeras_enhanced', line_mat, 'sketchKeras_enhanced.jpg')
-    show_active_img_and_save_denoise_filter('sketchKeras_pured', line_mat, 'sketchKeras_pured.jpg')
-    show_active_img_and_save_denoise('sketchKeras', line_mat, 'sketchKeras.jpg')
-    cv2.waitKey(0)
+    # show_active_img_and_save_denoise_filter2('sketchKeras_enhanced', line_mat, 'sketchKeras_enhanced.jpg')
+    # show_active_img_and_save_denoise_filter('sketchKeras_pured', line_mat, 'sketchKeras_pured.jpg')
+    show_active_img_and_save_denoise('sketchKeras', line_mat, 'lineart/' + path, False)
+    # cv2.waitKey(0)
     return
 
 
-get('test.jpg')
+files = os.listdir('../../../resource/training_data_set/colored_data_set/')
+for file in files:
+    get(file)
