@@ -53,3 +53,9 @@ class Generator(nn.Module):
         d0 = self.dconv5(self.relu(d1))  # (256,256,128)->(512,512,3)
 
         return F.tanh(d0)  # (512,512,3)
+
+    def save(self):
+        torch.save(self.state_dict(), "../../resource/model/generator.md")
+
+    def load(self):
+        self.load_state_dict(torch.load("../../resource/model/generator.md"))

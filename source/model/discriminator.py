@@ -1,3 +1,4 @@
+import torch
 from torch import nn
 import torch.nn.functional as F
 from .models import *
@@ -25,3 +26,9 @@ class Discriminator(nn.Module):
         h3 = self.lrelu(self.dbn3(self.conv9(h2)))  # (64,64,256)->(32,32,512)
         h4 = self.fc(flatten(h3))  # (32,32,512)->(1)
         return F.sigmoid(h4)
+
+    def save(self):
+        torch.save(self.state_dict(), "../../resource/model/discriminator.md")
+
+    def load(self):
+        self.load_state_dict(torch.load("../../resource/model/discriminator.md"))
