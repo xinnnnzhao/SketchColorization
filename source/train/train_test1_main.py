@@ -11,6 +11,8 @@ if torch.cuda.is_available():
 else:
     device = torch.device('cpu')
 batch_size = 10
+g_steps = 1
+print_interval = 10
 
 G = Generator().to(device)
 D = Discriminator().to(device)
@@ -48,3 +50,20 @@ for e in range(1000):
         d_error = d_fake_error + d_real_error
         d_error.backward()
         d_optimizer.step()
+
+        g_error = 0
+        for g_index in range(g_steps):
+            # 2. Train G on D's response (but DO NOT train D on these labels)
+            G.zero_grad()
+
+            g_fake_data = G(pre_image)
+            dg_fake_decision = D(g_fake_data)
+            g_error = criteria(dg_fake_decision,
+                               torch.ones(batch_size))  # we want to fool, so pretend it's all genuine
+
+            g_error.backward()
+            g_optimizer.step()  # Only optimizes G's parameters
+
+        if e % print_interval == 0:
+            print("epoch: %d, i : %d,  D-loss: %d, G-loss: %d" % (
+                e, i, d_error.detach().numpy(), g_error.detach().numpy()))

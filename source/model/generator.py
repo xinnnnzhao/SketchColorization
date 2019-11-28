@@ -21,11 +21,11 @@ class Generator(nn.Module):
         self.bn6 = nn.BatchNorm2d(512)
         self.bn7 = nn.BatchNorm2d(256)
         self.bn8 = nn.BatchNorm2d(128)
-        self.dconv1 = nn.ConvTranspose2d(1024, 512, kernel_size=2, stride=2, padding=2, output_padding=(1, 1))
-        self.dconv2 = nn.ConvTranspose2d(1024, 256, kernel_size=2, stride=2, padding=2, output_padding=(1, 1))
-        self.dconv3 = nn.ConvTranspose2d(512, 128, kernel_size=2, stride=2, padding=2, output_padding=(1, 1))
-        self.dconv4 = nn.ConvTranspose2d(256, 64, kernel_size=2, stride=2, padding=2, output_padding=(1, 1))
-        self.dconv5 = nn.ConvTranspose2d(128, 3, kernel_size=2, stride=2, padding=2, output_padding=(1, 1))
+        self.dconv1 = nn.ConvTranspose2d(1024, 512, kernel_size=5, stride=2, padding=2, output_padding=(1, 1))
+        self.dconv2 = nn.ConvTranspose2d(1024, 256, kernel_size=5, stride=2, padding=2, output_padding=(1, 1))
+        self.dconv3 = nn.ConvTranspose2d(512, 128, kernel_size=5, stride=2, padding=2, output_padding=(1, 1))
+        self.dconv4 = nn.ConvTranspose2d(256, 64, kernel_size=5, stride=2, padding=2, output_padding=(1, 1))
+        self.dconv5 = nn.ConvTranspose2d(128, 3, kernel_size=5, stride=2, padding=2, output_padding=(1, 1))
 
     def forward(self, X):
         e1 = self.conv1(X)  # (512,512,4)->(256,256,64)
@@ -36,19 +36,19 @@ class Generator(nn.Module):
 
         d4 = self.dconv1(self.relu(e5))  # (16,16,1024)->(32,32,512)
         d4 = self.bn6(d4)
-        d4 = torch.cat([d4, e4], 3)  # (32,32,1024)
+        d4 = torch.cat([d4, e4], 1)  # (32,32,1024)
 
         d3 = self.dconv2(self.relu(d4))  # (32,32,1024)->(64,64,256)
         d3 = self.bn7(d3)
-        d3 = torch.cat([d3, e3], 3)  # (64,64,512)
+        d3 = torch.cat([d3, e3], 1)  # (64,64,512)
 
         d2 = self.dconv3(self.relu(d3))  # (64,64,512)->(128,128,128)
         d2 = self.bn8(d2)
-        d2 = torch.cat([d2, e2], 3)  # (128,128,256)
+        d2 = torch.cat([d2, e2], 1)  # (128,128,256)
 
         d1 = self.dconv4(self.relu(d2))  # (128,128,256)->(256,256,64)
         d1 = self.bn1(d1)
-        d1 = torch.cat([d1, e1], 3)  # (256,256,128)
+        d1 = torch.cat([d1, e1], 1)  # (256,256,128)
 
         d0 = self.dconv5(self.relu(d1))  # (256,256,128)->(512,512,3)
 
