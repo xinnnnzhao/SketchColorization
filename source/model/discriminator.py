@@ -19,7 +19,6 @@ class Discriminator(nn.Module):
 
     def forward(self, X):
         ''' img size is (512,512,4+3) '''
-        print(X.shape)
         h0 = self.lrelu(self.conv6(X))  # (512,512,7)->(256,256,64)
         h1 = self.lrelu(self.dbn1(self.conv7(h0)))  # (256,256,64)->(128,128,128)
         h2 = self.lrelu(self.dbn2(self.conv8(h1)))  # (128,128,128)->(64,64,256)
